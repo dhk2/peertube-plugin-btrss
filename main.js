@@ -66,7 +66,7 @@ async function register ({
         if (enableDebug) {
           console.log("⚓⚓⚓⚓ account data",accountData,displayName,url,description,atomLink);
         }
-        videoList = await getAccountVideos(channel);
+        videoList = await getAccountVideos(account);
       }
     }
     if (enableDebug) {
