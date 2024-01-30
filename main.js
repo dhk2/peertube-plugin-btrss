@@ -38,6 +38,7 @@ async function register ({
     if (enableDebug) {
       console.log("⚓⚓⚓⚓ torrent feed request",req.query);
     }
+    let channel
     let apiUrl;
     let account;
     let playlist;
@@ -55,12 +56,13 @@ async function register ({
         console.log("⚓⚓ no channel requested", req.query);
       }
     } else {
+      channel = req.query.channel;
       channelData = getChannel(req.query.channel);
       if (channelData){
         description = channelData.description;
         url = channelData.url;
         displayName = channelData.displayName;
-        atomLink = `${base}/plugins/btrss/router/rss?channel="${req.query.channel}"`;
+        atomLink = `${base}/plugins/btrss/router/rss?channel="${channel}"`;
       }
       /*
       apiUrl = base + "/api/v1/video-channels/" + channel;
