@@ -37,8 +37,9 @@
     "fr-FR": "./languages/fr.json"
   },
   "devDependencies": {
-    "esbuild": "^0.14.36"
+    "esbuild": "^0.14.54"
   },
   "dependencies": {
+    "axios": "^1.6.7"
   }
 }
