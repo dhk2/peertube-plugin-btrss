@@ -64,7 +64,7 @@ async function register ({
         console.log("⚓⚓⚓⚓unable to load channel video info", apiUrl,err);
       }
       if (enableDebug) {
-        console.log("⚓⚓⚓⚓ channel video Data",videoData.data);
+        console.log("⚓⚓⚓⚓ channel video Data",videoData.data.total,videoData.data.data);
       }
     }
     
@@ -76,7 +76,7 @@ async function register ({
     if (enableDebug) {
       console.log("⚓⚓⚓⚓ video list", videoList.length, videoList);
     }
-    if (videoList.lenth<1){
+    if (videoList.length<1){
       return  res.status(404).send(`no videos found for ${channel}`);
     }
     let rss = `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">`;
