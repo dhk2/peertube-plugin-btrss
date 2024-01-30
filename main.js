@@ -191,6 +191,7 @@ async function register ({
       videoData = await axios.get(apiUrl);
     } catch (err) {
       console.log("⚓⚓⚓⚓unable to load channel video info", apiUrl,err);
+      return;
     }
     if (enableDebug) {
       //console.log("⚓⚓⚓⚓ channel video Data",videoData.data.total,videoData.data.data);
