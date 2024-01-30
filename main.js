@@ -38,14 +38,14 @@ async function register ({
     if (enableDebug) {
       console.log("⚓⚓⚓⚓ torrent feed request",req.query);
     }
-    let channel, account,playlist,channelData,videoData,accountData,playlistData;
+    let apiUrl, channel, account,playlist,channelData,videoData,accountData,playlistData,videoList;
     if (req.query.channel == undefined) {
       if (enableDebug) {
         console.log("⚓⚓ no channel requested", req.query);
       }
     } else {
       channel = req.query.channel;
-      let apiUrl = base + "/api/v1/video-channels/" + channel;
+      apiUrl = base + "/api/v1/video-channels/" + channel;
       try {
         channelData = await axios.get(apiUrl);
       } catch (err) {
@@ -57,7 +57,6 @@ async function register ({
         console.log("⚓⚓⚓⚓ channel Data",channelData.data);
       }
       apiUrl = `${base}/api/v1/video-channels/${channel}/videos`;
-      let videoData;
       try {
         videoData = await axios.get(apiUrl);
       } catch (err) {
