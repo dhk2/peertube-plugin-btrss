@@ -57,7 +57,7 @@ async function register ({
       }
     } else {
       channel = req.query.channel;
-      channelData = await getChannel(req.query.channel);
+      channelData = await getChannel(channel);
       if (channelData){
         description = channelData.description;
         url = channelData.url;
@@ -66,39 +66,11 @@ async function register ({
         if (enableDebug) {
           console.log("⚓⚓⚓⚓ channel data",channelData,displayName,url,description,atomLink);
         }
+        videoList = await getChannelVideos(channel);
       }
-      /*
-      apiUrl = base + "/api/v1/video-channels/" + channel;
-      try {
-        channelData = await axios.get(apiUrl);
-      } catch (err) {
-        if (enableDebug) {
-          console.log("⚓⚓⚓⚓unable to load channel info", apiUrl,err);
-        }
-      }
-      if (enableDebug) {
-        console.log("⚓⚓⚓⚓ channel Data",channelData.data);
-      }
-      */
-      apiUrl = `${base}/api/v1/video-channels/${channel}/videos`;
-      try {
-        videoData = await axios.get(apiUrl);
-      } catch (err) {
-        console.log("⚓⚓⚓⚓unable to load channel video info", apiUrl,err);
-      }
-      if (enableDebug) {
-        //console.log("⚓⚓⚓⚓ channel video Data",videoData.data.total,videoData.data.data);
-      }
-
-    }
-    
-    if (videoData && videoData.data ){
-      videoList = videoData.data.data;
-    } else {
-      videoList = [];
     }
     if (enableDebug) {
-      //console.log("⚓⚓⚓⚓ video list", videoList.length, videoList);
+      console.log("⚓⚓⚓⚓ video list", videoList);
     }
     let rss = `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">`;
     let indent =4;
@@ -211,6 +183,19 @@ async function register ({
       console.log("⚓⚓⚓⚓ channel Data",channelData.data);
     }
     return channelData.data
+  }
+  async function getChannelVideos (channel){
+    let apiUrl = `${base}/api/v1/video-channels/${channel}/videos`;
+    let videoData;
+    try {
+      videoData = await axios.get(apiUrl);
+    } catch (err) {
+      console.log("⚓⚓⚓⚓unable to load channel video info", apiUrl,err);
+    }
+    if (enableDebug) {
+      //console.log("⚓⚓⚓⚓ channel video Data",videoData.data.total,videoData.data.data);
+    }
+    return videoData.data.data;
   }
 
 }
