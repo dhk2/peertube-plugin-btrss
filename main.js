@@ -38,13 +38,31 @@ async function register ({
     if (enableDebug) {
       console.log("⚓⚓⚓⚓ torrent feed request",req.query);
     }
-    let apiUrl, channel, account,playlist,channelData,videoData,accountData,playlistData,videoList;
+    let apiUrl;
+    let account;
+    let playlist;
+    let channelData;
+    let videoData;
+    let accountData;
+    let playlistData;
+    let videoList;
+    let displayName;
+    let description;
+    let url;
+    let atomLink;
     if (req.query.channel == undefined) {
       if (enableDebug) {
         console.log("⚓⚓ no channel requested", req.query);
       }
     } else {
-      channel = req.query.channel;
+      channelData = getChannel(req.query.channel);
+      if (channelData){
+        description = channelData.description;
+        url = channelData.url;
+        displayName = channelData.displayName;
+        atomLink = `${base}/plugins/btrss/router/rss?channel="${req.query.channel}"`;
+      }
+      /*
       apiUrl = base + "/api/v1/video-channels/" + channel;
       try {
         channelData = await axios.get(apiUrl);
@@ -56,6 +74,7 @@ async function register ({
       if (enableDebug) {
         console.log("⚓⚓⚓⚓ channel Data",channelData.data);
       }
+      */
       apiUrl = `${base}/api/v1/video-channels/${channel}/videos`;
       try {
         videoData = await axios.get(apiUrl);
@@ -65,6 +84,7 @@ async function register ({
       if (enableDebug) {
         console.log("⚓⚓⚓⚓ channel video Data",videoData.data.total,videoData.data.data);
       }
+
     }
     
     if (videoData && videoData.data ){
@@ -75,21 +95,18 @@ async function register ({
     if (enableDebug) {
       console.log("⚓⚓⚓⚓ video list", videoList.length, videoList);
     }
-    if (videoList.length<1){
-      return  res.status(404).send(`no videos found for ${channel}`);
-    }
     let rss = `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">`;
     let indent =4;
     rss = rss +"\n"+' '.repeat(indent)+`<channel>`;
     indent = indent+4;
-    rss = rss + `\n`+' '.repeat(indent)+`<title>${channelData.data.displayName.replace(/\W+/g, " ")}</title>`;
-    rss = rss + `\n`+' '.repeat(indent)+`<link>${channelData.data.url}</link>`;
-    if (channelData.data.description){
-      rss = rss + `\n`+' '.repeat(indent)+`<description> ${channelData.data.description.replace(/\W+/g, " ")} </description>`;
+    rss = rss + `\n`+' '.repeat(indent)+`<title>${displayName.replace(/\W+/g, " ")}</title>`;
+    rss = rss + `\n`+' '.repeat(indent)+`<link>${url}</link>`;
+    if (description){
+      rss = rss + `\n`+' '.repeat(indent)+`<description> ${description.replace(/\W+/g, " ")} </description>`;
     } else {
       rss = rss + `\n`+' '.repeat(indent)+`<description> indescribable </description>`;
     }
-    let atomLink = base + "/plugins/podcast2/router/torrent?channel=" + channel;
+    //let atomLink = base + "/plugins/podcast2/router/torrent?channel=" + channel;
     rss = rss + `\n`+' '.repeat(indent)+`<atom:link href="${atomLink}" rel="self" type="application/rss+xml" />`;
     for (var video of videoList){
       rss = rss + `\n`+' '.repeat(indent)+`<item>`;
@@ -175,6 +192,21 @@ async function register ({
     res.setHeader('content-type', 'application/rss+xml');
     return  res.status(200).send(rss);
   })
+  async function getChannel(channel){
+    let apiUrl = base + "/api/v1/video-channels/" + channel;
+    try {
+      channelData = await axios.get(apiUrl);
+    } catch (err) {
+      if (enableDebug) {
+        console.log("⚓⚓⚓⚓unable to load channel info", apiUrl,err);
+      }
+      return;
+    }
+    if (enableDebug) {
+      console.log("⚓⚓⚓⚓ channel Data",channelData.data);
+    }
+    return channelData.data
+  }
 
 }
 async function unregister () {
