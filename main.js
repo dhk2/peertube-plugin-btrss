@@ -51,6 +51,27 @@ async function register ({
     let description;
     let url;
     let atomLink;
+    if (req.query.account == undefined) {
+      if (enableDebug) {
+        console.log("⚓⚓ no account requested", req.query);
+      }
+    } else {
+      account = req.query.account;
+      accountData = await getAccount(account);
+      if (accountData){
+        description = accountData.description;
+        url = accountData.url;
+        displayName = accountData.displayName;
+        atomLink = `${base}/plugins/btrss/router/rss?account="${account}"`;
+        if (enableDebug) {
+          console.log("⚓⚓⚓⚓ account data",accountData,displayName,url,description,atomLink);
+        }
+        videoList = await getAccountVideos(channel);
+      }
+    }
+    if (enableDebug) {
+      console.log("⚓⚓⚓⚓ video list", videoList);
+    }
     if (req.query.channel == undefined) {
       if (enableDebug) {
         console.log("⚓⚓ no channel requested", req.query);
@@ -171,6 +192,7 @@ async function register ({
   })
   async function getChannel(channel){
     let apiUrl = base + "/api/v1/video-channels/" + channel;
+    let channelData;
     try {
       channelData = await axios.get(apiUrl);
     } catch (err) {
@@ -183,6 +205,22 @@ async function register ({
       console.log("⚓⚓⚓⚓ channel Data",channelData.data);
     }
     return channelData.data
+  }
+  async function getAccount(account){ 
+    let apiUrl = `${base}/api/v1/accounts/${account}`;
+    let accountData;
+    try {
+      accountData = await axios.get(apiUrl);
+    } catch (err) {
+      if (enableDebug) {
+        console.log("⚓⚓⚓⚓ unable to load account info", apiUrl,err);
+      }
+      return;
+    }
+    if (enableDebug) {
+      console.log("⚓⚓⚓⚓ account Data",accountData.data);
+    }
+    return accountData.data
   }
   async function getChannelVideos (channel){
     let apiUrl = `${base}/api/v1/video-channels/${channel}/videos`;
@@ -198,7 +236,20 @@ async function register ({
     }
     return videoData.data.data;
   }
-
+  async function getAccountVideos (account){
+    let apiUrl = `${base}/api/v1/accounts/${account}/videos`;
+    let videoData;
+    try {
+      videoData = await axios.get(apiUrl);
+    } catch (err) {
+      console.log("⚓⚓⚓⚓unable to load account video info", apiUrl,err);
+      return;
+    }
+    if (enableDebug) {
+      //console.log("⚓⚓⚓⚓ channel video Data",videoData.data.total,videoData.data.data);
+    }
+    return videoData.data.data;
+  }
 }
 async function unregister () {
   return
