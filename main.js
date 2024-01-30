@@ -63,6 +63,9 @@ async function register ({
         url = channelData.url;
         displayName = channelData.displayName;
         atomLink = `${base}/plugins/btrss/router/rss?channel="${channel}"`;
+        if (enableDebug) {
+          console.log("⚓⚓⚓⚓ channel data",displayName,url,description,atomLink);
+        }
       }
       /*
       apiUrl = base + "/api/v1/video-channels/" + channel;
