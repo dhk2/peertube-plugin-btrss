@@ -64,7 +64,7 @@ async function register ({
         displayName = channelData.displayName;
         atomLink = `${base}/plugins/btrss/router/rss?channel="${channel}"`;
         if (enableDebug) {
-          console.log("⚓⚓⚓⚓ channel data",displayName,url,description,atomLink);
+          console.log("⚓⚓⚓⚓ channel data",channelData,displayName,url,description,atomLink);
         }
       }
       /*
@@ -87,7 +87,7 @@ async function register ({
         console.log("⚓⚓⚓⚓unable to load channel video info", apiUrl,err);
       }
       if (enableDebug) {
-        console.log("⚓⚓⚓⚓ channel video Data",videoData.data.total,videoData.data.data);
+        //console.log("⚓⚓⚓⚓ channel video Data",videoData.data.total,videoData.data.data);
       }
 
     }
@@ -98,7 +98,7 @@ async function register ({
       videoList = [];
     }
     if (enableDebug) {
-      console.log("⚓⚓⚓⚓ video list", videoList.length, videoList);
+      //console.log("⚓⚓⚓⚓ video list", videoList.length, videoList);
     }
     let rss = `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">`;
     let indent =4;
