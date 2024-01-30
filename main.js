@@ -38,46 +38,46 @@ async function register ({
     if (enableDebug) {
       console.log("⚓⚓⚓⚓ torrent feed request",req.query);
     }
-    if (!enableRss) {
-      console.log("⚓⚓⚓⚓⚓⚓⚓⚓⚓⚓RSS disabled");
-      return res.status(403).send();
-    }
-    let channel;
+    let channel, account,playlist,channelData,videoData,accountData,playlistData;
     if (req.query.channel == undefined) {
-      console.log("⚓⚓no channel requested", req.query);
-      return res.status(404).send();
+      if (enableDebug) {
+        console.log("⚓⚓ no channel requested", req.query);
+      }
     } else {
       channel = req.query.channel;
+      let apiUrl = base + "/api/v1/video-channels/" + channel;
+      try {
+        channelData = await axios.get(apiUrl);
+      } catch (err) {
+        if (enableDebug) {
+          console.log("⚓⚓⚓⚓unable to load channel info", apiUrl,err);
+        }
+      }
+      if (enableDebug) {
+        console.log("⚓⚓⚓⚓ channel Data",channelData.data);
+      }
+      apiUrl = `${base}/api/v1/video-channels/${channel}/videos`;
+      let videoData;
+      try {
+        videoData = await axios.get(apiUrl);
+      } catch (err) {
+        console.log("⚓⚓⚓⚓unable to load channel video info", apiUrl,err);
+      }
+      if (enableDebug) {
+        console.log("⚓⚓⚓⚓ channel video Data",videoData.data);
+      }
     }
-    let apiUrl = base + "/api/v1/video-channels/" + channel;
-    let channelData;
-    try {
-      channelData = await axios.get(apiUrl);
-    } catch {
-      console.log("⚓⚓⚓⚓unable to load channel info", apiUrl);
-      return res.status(400).send();
-    }
-    if (enableDebug) {
-      console.log("⚓⚓⚓⚓ channel Data",channelData.data);
-    }
-    apiUrl = `${base}/api/v1/video-channels/${channel}/videos`;
-    let videoData;
-    try {
-      videoData = await axios.get(apiUrl);
-    } catch {
-      console.log("⚓⚓⚓⚓unable to load video  info", apiUrl);
-      return res.status(400).send();
-    }
-    if (enableDebug) {
-      console.log("⚓⚓⚓⚓ video Data",videoData.data);
-    }
+    
     if (videoData && videoData.data ){
       videoList = videoData.data.data;
     } else {
       videoList = [];
     }
     if (enableDebug) {
-      console.log("⚓⚓⚓⚓ video list",videoList);
+      console.log("⚓⚓⚓⚓ video list", videoList.length, videoList);
+    }
+    if (videoList.lenth<1){
+      return  res.status(404).send(`no videos found for ${channel}`);
     }
     let rss = `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">`;
     let indent =4;
