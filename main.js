@@ -57,7 +57,7 @@ async function register ({
       }
     } else {
       channel = req.query.channel;
-      channelData = getChannel(req.query.channel);
+      channelData = await getChannel(req.query.channel);
       if (channelData){
         description = channelData.description;
         url = channelData.url;
