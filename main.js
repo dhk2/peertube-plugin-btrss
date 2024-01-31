@@ -116,9 +116,11 @@ async function register ({
         console.error(`Got an error trying to read the file: `,error);
       }
     }
-    if (timeDiff && timeDiff<(2*60000) && rssCache){    
+    if (channel && timeDiff && timeDiff<(2*60000) && rssCache){    
       console.log("⚓⚓ cache timediff under limit, returning rsscache");      
       return res.status(200).send(rssCache);
+    } else {
+      console.log("⚓⚓ cache missed, creating rss",channel,timeDiff,rssCache); 
     }
     //get channel data
     if (channel){
