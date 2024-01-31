@@ -69,7 +69,7 @@ async function register ({
         await fs.readFile(rssFile, 'utf8',(err, rssData) => {
           rssCache = rssData;
           if (timeDiff/60000<2){          
-            return  res.status(200).send(rssData);
+            return res.status(200).send(rssData);
           }
         })
       } catch (error) {
