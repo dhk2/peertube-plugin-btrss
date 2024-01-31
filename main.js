@@ -110,16 +110,15 @@ async function register ({
       rssData = await fs.readFile(rssFile, 'utf8')
       if (rssData){
         rssCache = rssData;
-        console.log("⚓⚓ cached rss data", rssData,rssCache);
       }
-      console.log("⚓⚓ end of else block ",channel,timeDiff,rssCache); 
+      console.log("⚓⚓ end of else block ",channel,timeDiff); 
     }
-    console.log("⚓⚓ state before if ",channel,timeDiff,rssCache); 
+    console.log("⚓⚓ state before if ",channel,timeDiff); 
     if (channel && timeDiff && timeDiff<(2*60000) && rssCache){    
       console.log("⚓⚓ cache timediff under limit, returning rsscache");      
       return res.status(200).send(rssCache);
     } else {
-      console.log("⚓⚓ cache missed, creating rss",channel,timeDiff,rssCache); 
+      console.log("⚓⚓ cache missed, creating rss",channel,timeDiff); 
     }
     //get channel data
     if (channel){
