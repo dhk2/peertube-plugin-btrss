@@ -112,7 +112,9 @@ async function register ({
         rssCache = rssData;
         console.log("⚓⚓ cached rss data", rssData,rssCache);
       })
+      console.log("⚓⚓ end of else block ",channel,timeDiff,rssCache); 
     }
+    console.log("⚓⚓ state before if ",channel,timeDiff,rssCache); 
     if (channel && timeDiff && timeDiff<(2*60000) && rssCache){    
       console.log("⚓⚓ cache timediff under limit, returning rsscache");      
       return res.status(200).send(rssCache);
