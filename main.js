@@ -202,7 +202,7 @@ async function register ({
     rss = rss + `\n`+' '.repeat(indent)+`</channel>`;
     rss = rss + `\n</rss>\n`;
     if (rss == rssCache){
-      console.log("⚓⚓ cached data matches fresh data", rssFile,err);
+      console.log("⚓⚓ cached data matches fresh data", rssFile);
     } else if (rssFile){
       fs.writeFile(rssFile, rss, (err) => {
         console.log("⚓⚓⚓⚓ unable to write rss file", rss, rssCache, rssFile,err);
