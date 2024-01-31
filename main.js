@@ -209,7 +209,7 @@ async function register ({
       console.log("⚓⚓ cached data matches fresh data", rssFile,err);
     } else if (rssFile){
       fs.writeFile(rssFile, rss, (err) => {
-        console.log("⚓⚓⚓⚓ unable to write rss file", rssFile,err);
+        console.log("⚓⚓⚓⚓ unable to write rss file", rss, rssData, rssFile,err);
       });
     }
     if (account) {
