@@ -62,8 +62,10 @@ async function register ({
       //fs.readFile(path.join(basePath, 'filename.txt'), 'content of my file', function (err) {
       try {
         const rssData = await fs.readFile(rssFile);
-        return  res.status(200).send(rssData);
-        console.log(data.toString());
+        await fs.readFile(rssFile, (err, rssDdata) => {
+          console.log(data);
+          return  res.status(200).send(rssData);
+       })
       } catch (error) {
         console.error(`Got an error trying to read the file: {error.message}`,error);
       }  
