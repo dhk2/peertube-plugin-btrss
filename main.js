@@ -62,7 +62,6 @@ async function register ({
       //fs.readFile(path.join(basePath, 'filename.txt'), 'content of my file', function (err) {
       try {
         await fs.readFile(rssFile, (err, rssDdata) => {
-          console.log(data);
           return  res.status(200).send(rssData);
        })
       } catch (error) {
