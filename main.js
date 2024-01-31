@@ -51,26 +51,34 @@ async function register ({
     let url;
     let atomLink;
     let rssData;
+    let rssFile;
     if (req.query.account == undefined) {
       if (enableDebug) {
         console.log("⚓⚓ no account requested", req.query);
       }
     } else {
       account = req.query.account;
-      //let rssFile = path.join(basePath,`${account}.rss`);
-      //let rssFile = `${basePath}\${account}.rss`
-      let rssFile = basePath+"/"+account+".rss";
-      //fs.readFile(path.join(basePath, 'filename.txt'), 'content of my file', function (err) {
+      const cache = await storageManager.getData(`btrss-${account}`)
+      let timeDiff;
+      if (cache){
+        timeDiff=Date.now()-cache;
+        console.log ("⚓⚓ cache timediffs", timeDiff,timeDiff/1000,timeDiff/60000,timeDiff/3600000);
+      }
+      rssFile = basePath+"/"+account+".rss";
       try {
         await fs.readFile(rssFile, (err, rssData) => {
           console.log(`⚓⚓ fs read file error: ${err.message}`,rssData,err);
           //return  res.status(200).send(rssData);
-       })
+        })
       } catch (error) {
         console.error(`Got an error trying to read the file: ${error.message}`,error);
       }  
      
-
+      if (rssData){
+        console.log(`⚓⚓ got rss data:`,rssData);
+        return  res.status(200).send(rssData);
+      }
+      
       accountData = await getAccount(account);
       if (accountData){
         description = accountData.description;
@@ -196,6 +204,18 @@ async function register ({
     indent = indent-4;
     rss = rss + `\n`+' '.repeat(indent)+`</channel>`;
     rss = rss + `\n</rss>\n`;
+
+    if (rssFile){
+      if (account) {
+        storageManager.storeData(`btrss-${account}`,Date.now());
+      }
+      if (channel) {
+        storageManager.storeData(`btrss-${channel}`,Date.now());
+      }
+      fs.writeFile(rssFile, rss, (err) => {
+        console.log("⚓⚓⚓⚓unable to rss file", rssFile,err);
+      });
+    }
     return  res.status(200).send(rss);
   })
   async function getChannel(channel){
