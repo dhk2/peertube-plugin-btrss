@@ -50,7 +50,7 @@ async function register ({
     let description;
     let url;
     let atomLink;
-    let rssData;
+    let rssCache;
     let rssFile;
     if (req.query.account == undefined) {
       if (enableDebug) {
@@ -67,6 +67,7 @@ async function register ({
       rssFile = basePath+"/"+account+".rss";
       try {
         await fs.readFile(rssFile, 'utf8',(err, rssData) => {
+          rssCache = rssData;
           if (timeDiff/60000<2){          
             return  res.status(200).send(rssData);
           }
@@ -75,11 +76,6 @@ async function register ({
         console.error(`Got an error trying to read the file: ${error.message}`,error);
       }  
      
-      if (rssData){
-        console.log(`⚓⚓ got rss data:`,rssData);
-        return  res.status(200).send(rssData);
-      }
-      
       accountData = await getAccount(account);
       if (accountData){
         description = accountData.description;
@@ -205,11 +201,11 @@ async function register ({
     indent = indent-4;
     rss = rss + `\n`+' '.repeat(indent)+`</channel>`;
     rss = rss + `\n</rss>\n`;
-    if (rss == rssData){
+    if (rss == rssCache){
       console.log("⚓⚓ cached data matches fresh data", rssFile,err);
     } else if (rssFile){
       fs.writeFile(rssFile, rss, (err) => {
-        console.log("⚓⚓⚓⚓ unable to write rss file", rss, rssData, rssFile,err);
+        console.log("⚓⚓⚓⚓ unable to write rss file", rss, rssCache, rssFile,err);
       });
     }
     if (account) {
