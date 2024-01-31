@@ -67,7 +67,7 @@ async function register ({
       }
       rssFile = basePath+"/"+account+".rss";
       try {
-        await fs.readFile(rssFile, 'utf8',(err, rssData) => {
+        await fs.readFile(rssFile, 'utf8', async (err, rssData) => {
           rssCache = rssData;
         })
       } catch (error) {
@@ -108,7 +108,7 @@ async function register ({
         console.log ("⚓⚓ cache timediffs", timeDiff,timeDiff/1000,timeDiff/60000,timeDiff/3600000);
       }
       rssFile = basePath+"/"+channel+".rss";
-      await fs.readFileSync(rssFile, 'utf8',(err, rssData) => {
+      await fs.readFileSync(rssFile, 'utf8',  async (err, rssData) => {
         rssCache = rssData;
         console.log("⚓⚓ cached rss data", rssData,rssCache);
       })
