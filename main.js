@@ -66,7 +66,7 @@ async function register ({
       }
       rssFile = basePath+"/"+account+".rss";
       try {
-        await fs.readFile(rssFile, (err, rssData) => {
+        await fs.readFile(rssFile, 'utf8',(err, rssData) => {
           console.log(`⚓⚓ fs read file error:`,rssData,err);
           //return  res.status(200).send(rssData);
         })
