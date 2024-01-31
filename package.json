@@ -1,7 +1,7 @@
 {
   "name": "peertube-plugin-btrss",
   "description": "PeerTube plugin generating Bit Torrent RSS feeds for channels",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "DHK2",
   "bugs": "https://github.com/dhk2/peertube-plugin-btrss/issues",
   "clientScripts": [
