@@ -11,7 +11,7 @@ async function register ({
   videoLicenceManager,
   videoLanguageManager
 }) {
-
+    const fs = require('fs');
     registerSetting({
     name: 'debug-enable',
     default: false,
@@ -82,7 +82,7 @@ async function register ({
       }
     }
     if (enableDebug) {
-      console.log("⚓⚓⚓⚓ video list", videoList);
+      //console.log("⚓⚓⚓⚓ video list", videoList);
     }
     if (req.query.channel == undefined) {
       if (enableDebug) {
@@ -102,8 +102,8 @@ async function register ({
         videoList = await getChannelVideos(channel);
       }
     }
-    if (enableDebug) {
-      console.log("⚓⚓⚓⚓ video list", videoList);
+    if (enableDebug && videoList) {
+      console.log("⚓⚓⚓⚓ video list", videoList.length);
     }
     let rss = `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">`;
     let indent =4;
