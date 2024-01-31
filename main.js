@@ -72,8 +72,8 @@ async function register ({
       } catch (error) {
         console.error(`Got an error trying to read the file: ${error.message}`,error);
       }  
-      if (timeDiff/60000<2){          
-        return res.status(200).send(rssData);
+      if (timeDiff/60000<2 && rssCache){          
+        return res.status(200).send(rssCache);
       }
       accountData = await getAccount(account);
       if (accountData){
