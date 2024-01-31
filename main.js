@@ -35,6 +35,7 @@ async function register ({
   
   const router = getRouter();
   router.use('/rss', async (req,res) =>{
+    res.setHeader('content-type', 'application/rss+xml');
     if (enableDebug) {
       console.log("⚓⚓⚓⚓ torrent feed request",req.query);
     }
@@ -195,7 +196,6 @@ async function register ({
     indent = indent-4;
     rss = rss + `\n`+' '.repeat(indent)+`</channel>`;
     rss = rss + `\n</rss>\n`;
-    res.setHeader('content-type', 'application/rss+xml');
     return  res.status(200).send(rss);
   })
   async function getChannel(channel){
