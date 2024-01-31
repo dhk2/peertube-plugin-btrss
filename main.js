@@ -27,7 +27,7 @@ async function register ({
     descriptionHTML: 'any requests in this timeframe from the last recalculation of RSS will get the cached version ',
     private: false
   })
-  let cacheTime = await Number(settingsManager.getSetting("cache-time"));
+  let cacheTime = number(await settingsManager.getSetting("cache-time"));
   let enableDebug = await settingsManager.getSetting("debug-enable");
   var base = await peertubeHelpers.config.getWebserverUrl();
   var basePath = peertubeHelpers.plugin.getDataDirectoryPath();
