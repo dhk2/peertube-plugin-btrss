@@ -39,11 +39,9 @@ async function register ({
       console.log("⚓⚓⚓⚓ torrent feed request",req.query);
     }
     let channel
-    let apiUrl;
     let account;
     let playlist;
     let channelData;
-    let videoData;
     let accountData;
     let playlistData;
     let videoList;
@@ -51,12 +49,25 @@ async function register ({
     let description;
     let url;
     let atomLink;
+    let rssData;
     if (req.query.account == undefined) {
       if (enableDebug) {
         console.log("⚓⚓ no account requested", req.query);
       }
     } else {
       account = req.query.account;
+      let rssfile = path.join(basePath,`${account}.rss`);
+      //let rssfile = `${basePath}\${account}.rss`
+      //fs.readFile(path.join(basePath, 'filename.txt'), 'content of my file', function (err) {
+      try {
+        const rssData = await readFile(rssfile);
+        return  res.status(200).send(rssData);
+        console.log(data.toString());
+      } catch (error) {
+        console.error(`Got an error trying to read the file: {error.message}`,error);
+      }  
+     
+
       accountData = await getAccount(account);
       if (accountData){
         description = accountData.description;
@@ -130,19 +141,14 @@ async function register ({
         console.log("⚓⚓⚓⚓unable to load video specific info", apiUrl,err);
         return res.status(400).send();
       }
-      if (enableDebug) {
-        let v;
-        v = videoSpecificData.data;
-        console.log("⚓⚓⚓⚓ video specific data",v,v.files,v.streamingPlaylists[0],v.streamingPlaylists[0].files);
-      }
-      
+     
       torrentUrl = videoSpecificData.data.streamingPlaylists[0].files[0].torrentUrl;
       fileSize =   videoSpecificData.data.streamingPlaylists[0].files[0].size;
       magnet = videoSpecificData.data.streamingPlaylists[0].files[0].magnetUri;
       tracker = videoSpecificData.data.trackerUrls[0];
-      console.log("⚓⚓⚓⚓ published", pubDate);
+      //console.log("⚓⚓⚓⚓ published", pubDate);
       let fileName = video.name;
-      console.log("⚓⚓⚓⚓ found file name", fileName);
+      //console.log("⚓⚓⚓⚓ found file name", fileName);
       rss = rss + `\n`+' '.repeat(indent)+`<enclosure type="application/x-bittorrent" url="${torrentUrl}" length="${fileSize}" />`;
       rss = rss + `\n`+' '.repeat(indent)+`<link>${torrentUrl}</link>`;
       rss = rss + `\n`+' '.repeat(indent)+`<guid>${torrentUrl}</guid>`;
@@ -207,6 +213,22 @@ async function register ({
     return channelData.data
   }
   async function getAccount(account){ 
+    let apiUrl = `${base}/api/v1/accounts/${account}`;
+    let accountData;
+    try {
+      accountData = await axios.get(apiUrl);
+    } catch (err) {
+      if (enableDebug) {
+        console.log("⚓⚓⚓⚓ unable to load account info", apiUrl,err);
+      }
+      return;
+    }
+    if (enableDebug) {
+      console.log("⚓⚓⚓⚓ account Data",accountData.data);
+    }
+    return accountData.data
+  }
+  async function getPlaylist(account){ 
     let apiUrl = `${base}/api/v1/accounts/${account}`;
     let accountData;
     try {
