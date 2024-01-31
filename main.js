@@ -58,16 +58,16 @@ async function register ({
     } else {
       account = req.query.account;
       //let rssFile = path.join(basePath,`${account}.rss`);
-      let rssFile = `${basePath}\${account}.rss`
-      //let rssFile = basePath+"/"+account+".rss";
+      //let rssFile = `${basePath}\${account}.rss`
+      let rssFile = basePath+"/"+account+".rss";
       //fs.readFile(path.join(basePath, 'filename.txt'), 'content of my file', function (err) {
       try {
         await fs.readFile(rssFile, (err, rssData) => {
-          console.log(`⚓⚓ fs read file error: {error.message}`,rssData,err);
-          return  res.status(200).send(rssData);
+          console.log(`⚓⚓ fs read file error: ${err.message}`,rssData,err);
+          //return  res.status(200).send(rssData);
        })
       } catch (error) {
-        console.error(`Got an error trying to read the file: {error.message}`,error);
+        console.error(`Got an error trying to read the file: ${error.message}`,error);
       }  
      
 
