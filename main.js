@@ -19,6 +19,15 @@ async function register ({
     descriptionHTML: 'This will create more extensive logging of program state data both client and server side for finding and resolving errors ',
     private: false
   })
+  registerSetting({
+    name: 'cache-time',
+    default: 60,
+    label: 'How many minutes to trust cache',
+    type: 'input',
+    descriptionHTML: 'any requests in this timeframe from the last recalculation of RSS will get the cached version ',
+    private: false
+  })
+  let cacheTime = await settingsManager.getSetting("cache-time");
   let enableDebug = await settingsManager.getSetting("debug-enable");
   var base = await peertubeHelpers.config.getWebserverUrl();
   var basePath = peertubeHelpers.plugin.getDataDirectoryPath();
@@ -70,7 +79,7 @@ async function register ({
         rssCache = rssData;
       }
     }
-    if (timeDiff && timeDiff<(2*60000) && rssCache){    
+    if (timeDiff && timeDiff<(cacheTime*60000) && rssCache){    
       console.log("⚓⚓ cache timediff under limit, returning rsscache");      
       return res.status(200).send(rssCache);
     }
@@ -111,7 +120,7 @@ async function register ({
       console.log("⚓⚓ end of else block ",channel,timeDiff); 
     }
     console.log("⚓⚓ state before if ",channel,timeDiff); 
-    if (channel && timeDiff && timeDiff<(2*60000) && rssCache){    
+    if (channel && timeDiff && timeDiff<(cacheTime*60000) && rssCache){    
       console.log("⚓⚓ cache timediff under limit, returning rsscache");      
       return res.status(200).send(rssCache);
     } else {
