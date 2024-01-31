@@ -107,10 +107,11 @@ async function register ({
         console.log ("⚓⚓ cache timediffs", timeDiff,timeDiff/1000,timeDiff/60000,timeDiff/3600000);
       }
       rssFile = basePath+"/"+channel+".rss";
-      await fs.readFile(rssFile, 'utf8',  async (err, rssData) => {
+      rssData = await fs.readFile(rssFile, 'utf8')
+      if (rssData){
         rssCache = rssData;
         console.log("⚓⚓ cached rss data", rssData,rssCache);
-      })
+      }
       console.log("⚓⚓ end of else block ",channel,timeDiff,rssCache); 
     }
     console.log("⚓⚓ state before if ",channel,timeDiff,rssCache); 
