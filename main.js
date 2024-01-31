@@ -1,5 +1,5 @@
 const axios = require('axios');
-
+const fs = require('fs').promises;
 async function register ({
   registerHook,
   registerSetting,
@@ -11,7 +11,6 @@ async function register ({
   videoLicenceManager,
   videoLanguageManager
 }) {
-    const fs = require('fs');
     registerSetting({
     name: 'debug-enable',
     default: false,
