@@ -68,14 +68,13 @@ async function register ({
       try {
         await fs.readFile(rssFile, 'utf8',(err, rssData) => {
           rssCache = rssData;
-          if (timeDiff/60000<2){          
-            return res.status(200).send(rssData);
-          }
         })
       } catch (error) {
         console.error(`Got an error trying to read the file: ${error.message}`,error);
       }  
-     
+      if (timeDiff/60000<2){          
+        return res.status(200).send(rssData);
+      }
       accountData = await getAccount(account);
       if (accountData){
         description = accountData.description;
