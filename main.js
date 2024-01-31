@@ -27,7 +27,7 @@ async function register ({
     descriptionHTML: 'any requests in this timeframe from the last recalculation of RSS will get the cached version ',
     private: false
   })
-  let cacheTime = await settingsManager.getSetting("cache-time");
+  let cacheTime = await Number(settingsManager.getSetting("cache-time"));
   let enableDebug = await settingsManager.getSetting("debug-enable");
   var base = await peertubeHelpers.config.getWebserverUrl();
   var basePath = peertubeHelpers.plugin.getDataDirectoryPath();
@@ -82,6 +82,8 @@ async function register ({
     if (timeDiff && timeDiff<(cacheTime*60000) && rssCache){    
       console.log("⚓⚓ cache timediff under limit, returning rsscache");      
       return res.status(200).send(rssCache);
+    } else {
+      console.log("⚓⚓ cache timediff overlimit,generating new rsscache",timeDiff,cacheTime); 
     }
     //get account data
     if (account){
