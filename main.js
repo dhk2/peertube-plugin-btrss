@@ -67,8 +67,9 @@ async function register ({
       rssFile = basePath+"/"+account+".rss";
       try {
         await fs.readFile(rssFile, 'utf8',(err, rssData) => {
-          console.log(`⚓⚓ fs read file error:`,rssData,err);
-          //return  res.status(200).send(rssData);
+          if (timeDiff/60000<2){          
+            return  res.status(200).send(rssData);
+          }
         })
       } catch (error) {
         console.error(`Got an error trying to read the file: ${error.message}`,error);
@@ -204,17 +205,18 @@ async function register ({
     indent = indent-4;
     rss = rss + `\n`+' '.repeat(indent)+`</channel>`;
     rss = rss + `\n</rss>\n`;
-
-    if (rssFile){
-      if (account) {
-        storageManager.storeData(`btrss-${account}`,Date.now());
-      }
-      if (channel) {
-        storageManager.storeData(`btrss-${channel}`,Date.now());
-      }
+    if (rss == rssData){
+      console.log("⚓⚓ cached data matches fresh data", rssFile,err);
+    } else if (rssFile){
       fs.writeFile(rssFile, rss, (err) => {
-        console.log("⚓⚓⚓⚓unable to rss file", rssFile,err);
+        console.log("⚓⚓⚓⚓ unable to write rss file", rssFile,err);
       });
+    }
+    if (account) {
+      storageManager.storeData(`btrss-${account}`,Date.now());
+    }
+    if (channel) {
+      storageManager.storeData(`btrss-${channel}`,Date.now());
     }
     return  res.status(200).send(rss);
   })
