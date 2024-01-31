@@ -111,6 +111,7 @@ async function register ({
       try {
         await fs.readFile(rssFile, 'utf8',(err, rssData) => {
           rssCache = rssData;
+          console.log("⚓⚓ cached rss data", rssData,rssCache);
         })
       } catch (error) {
         console.error(`Got an error trying to read the file: `,error);
