@@ -61,7 +61,7 @@ async function register ({
       //let rssFile = basePath+"/"+account+".rss";
       //fs.readFile(path.join(basePath, 'filename.txt'), 'content of my file', function (err) {
       try {
-        const rssData = await readFile(rssFile);
+        const rssData = await fs.readFile(rssFile);
         return  res.status(200).send(rssData);
         console.log(data.toString());
       } catch (error) {
