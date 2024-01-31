@@ -53,6 +53,7 @@ async function register ({
     let rssCache;
     let rssFile;
     let timeDiff;
+    //check for cached account rss
     if (req.query.account == undefined) {
       if (enableDebug) {
         console.log("⚓⚓ no account requested", req.query);
@@ -72,45 +73,74 @@ async function register ({
       } catch (error) {
         console.error(`Got an error trying to read the file: ${error.message}`,error);
       }  
-      accountData = await getAccount(account);
-      if (accountData){
-        description = accountData.description;
-        url = accountData.url;
-        displayName = accountData.displayName;
-        atomLink = `${base}/plugins/btrss/router/rss?account="${account}"`;
-        if (enableDebug) {
-          console.log("⚓⚓⚓⚓ account data",accountData,displayName,url,description,atomLink);
-        }
-        videoList = await getAccountVideos(account);
-      }
     }
-    if (timeDiff/60000<2 && rssCache){    
+    if (timeDiff && timeDiff<(2*60000) && rssCache){    
       console.log("⚓⚓ cache timediff under limit, returning rsscache");      
       return res.status(200).send(rssCache);
+    }
+    //get account data
+    if (account){
+      accountData = await getAccount(account);
+    }
+    if (accountData){
+      description = accountData.description;
+      url = accountData.url;
+      displayName = accountData.displayName;
+      atomLink = `${base}/plugins/btrss/router/rss?account="${account}"`;
+      if (enableDebug) {
+        console.log("⚓⚓⚓⚓ account data",accountData,displayName,url,description,atomLink);
+      }
+      videoList = await getAccountVideos(account);
     }
     if (enableDebug) {
       //console.log("⚓⚓⚓⚓ video list", videoList);
     }
+    //check for cached channel rss
     if (req.query.channel == undefined) {
       if (enableDebug) {
         console.log("⚓⚓ no channel requested", req.query);
       }
     } else {
       channel = req.query.channel;
-      channelData = await getChannel(channel);
-      if (channelData){
-        description = channelData.description;
-        url = channelData.url;
-        displayName = channelData.displayName;
-        atomLink = `${base}/plugins/btrss/router/rss?channel="${channel}"`;
-        if (enableDebug) {
-          console.log("⚓⚓⚓⚓ channel data",channelData,displayName,url,description,atomLink);
-        }
-        videoList = await getChannelVideos(channel);
+      const cache = await storageManager.getData(`btrss-${channel}`)
+      if (cache){
+        timeDiff=Date.now()-cache;
+        console.log ("⚓⚓ cache timediffs", timeDiff,timeDiff/1000,timeDiff/60000,timeDiff/3600000);
       }
+      rssFile = basePath+"/"+channel+".rss";
+      try {
+        await fs.readFile(rssFile, 'utf8',(err, rssData) => {
+          rssCache = rssData;
+        })
+      } catch (error) {
+        console.error(`Got an error trying to read the file: `,error);
+      }
+    }
+    if (timeDiff && timeDiff<(2*60000) && rssCache){    
+      console.log("⚓⚓ cache timediff under limit, returning rsscache");      
+      return res.status(200).send(rssCache);
+    }
+    //get channel data
+    if (channel){
+      channelData = await getChannel(channel);
+    }
+    if (channelData){
+      description = channelData.description;
+      url = channelData.url;
+      displayName = channelData.displayName;
+      atomLink = `${base}/plugins/btrss/router/rss?channel="${channel}"`;
+      if (enableDebug) {
+        console.log("⚓⚓⚓⚓ channel data",channelData,displayName,url,description,atomLink);
+      }
+      videoList = await getChannelVideos(channel);
     }
     if (enableDebug && videoList) {
       console.log("⚓⚓⚓⚓ video list", videoList.length);
+    }
+    // Start RSS generation
+    if (!url || !displayName || (!account && !channel)){
+      console.log("⚓⚓⚓⚓ data issue, unable to generate RSS feed", videoList.length,url,displayName,account,channel);
+      return res.status(400).send();
     }
     let rss = `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">`;
     let indent =4;
@@ -201,6 +231,7 @@ async function register ({
     indent = indent-4;
     rss = rss + `\n`+' '.repeat(indent)+`</channel>`;
     rss = rss + `\n</rss>\n`;
+    // determine if new file is different from cached
     if (rss == rssCache){
       console.log("⚓⚓ cached data matches fresh data", rssFile);
     } else if (rssFile){
