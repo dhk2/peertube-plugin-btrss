@@ -65,13 +65,10 @@ async function register ({
         console.log ("⚓⚓ cache timediffs", timeDiff,timeDiff/1000,timeDiff/60000,timeDiff/3600000);
       }
       rssFile = basePath+"/"+account+".rss";
-      try {
-        await fs.readFile(rssFile, 'utf8', async (err, rssData) => {
-          rssCache = rssData;
-        })
-      } catch (error) {
-        console.error(`Got an error trying to read the file: ${error.message}`,error);
-      }  
+      rssData = await fs.readFile(rssFile, 'utf8')
+      if (rssData){
+        rssCache = rssData;
+      }
     }
     if (timeDiff && timeDiff<(2*60000) && rssCache){    
       console.log("⚓⚓ cache timediff under limit, returning rsscache");      
