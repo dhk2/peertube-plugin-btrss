@@ -56,11 +56,12 @@ async function register ({
       }
     } else {
       account = req.query.account;
-      let rssfile = path.join(basePath,`${account}.rss`);
-      //let rssfile = `${basePath}\${account}.rss`
+      //let rssFile = path.join(basePath,`${account}.rss`);
+      let rssFile = `${basePath}\${account}.rss`
+      //let rssFile = basePath+"/"+account+".rss";
       //fs.readFile(path.join(basePath, 'filename.txt'), 'content of my file', function (err) {
       try {
-        const rssData = await readFile(rssfile);
+        const rssData = await readFile(rssFile);
         return  res.status(200).send(rssData);
         console.log(data.toString());
       } catch (error) {
